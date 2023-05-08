@@ -1,0 +1,16 @@
+[package]
+name = "terminal-wgpu"
+version = "0.1.0"
+edition = "2021"
+resolver="2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.70"
+env_logger = "0.10.0"
+futures = "0.3.28"
+glyph_brush = "0.7.7"
+wgpu = "0.15"
+wgpu_glyph = "0.19.0"
+winit = "0.28.3"

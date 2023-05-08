@@ -2,7 +2,7 @@ use std::{
     fs::File,
     io::{Error, ErrorKind, Read, Write},
     os::{
-        fd::{AsRawFd, FromRawFd, RawFd},
+        fd::{AsRawFd, FromRawFd},
         unix::process::CommandExt,
     },
     process::{Child, Command, Stdio},
@@ -27,6 +27,8 @@ pub struct Pty {
     pub file: File,
     pub signals: Signals,
 }
+
+use terminal_common::WinSizeExt;
 
 // Heavily based on https://github.com/alacritty/alacritty/blob/master/alacritty_terminal/src/tty/unix.rs
 
@@ -88,8 +90,7 @@ impl Pty {
                     command.get_program().to_string_lossy(),
                     err
                 ),
-            )
-            .into()),
+            )),
         }
     }
 }
@@ -141,36 +142,6 @@ impl Source for Pty {
     fn deregister(&mut self, registry: &mio::Registry) -> std::io::Result<()> {
         registry.deregister(&mut SourceFd(&self.file.as_raw_fd()))?;
         registry.deregister(&mut self.signals)
-    }
-}
-
-pub trait WinSizeExt {
-    fn get_term_size(&self) -> std::io::Result<winsize>;
-    fn set_term_size(&self, win: &winsize) -> std::io::Result<()>;
-}
-
-impl WinSizeExt for RawFd {
-    fn get_term_size(&self) -> std::io::Result<winsize> {
-        let mut win = winsize {
-            ws_row: 0,
-            ws_col: 0,
-            ws_xpixel: 0,
-            ws_ypixel: 0,
-        };
-
-        let ret = unsafe { libc::ioctl(*self, libc::TIOCGWINSZ, &mut win as *mut _) };
-        if ret < 0 {
-            return Err(std::io::Error::last_os_error().into());
-        }
-        Ok(win)
-    }
-
-    fn set_term_size(&self, win: &winsize) -> std::io::Result<()> {
-        let ret = unsafe { libc::ioctl(*self, libc::TIOCSWINSZ, win as *const _) };
-        if ret < 0 {
-            return Err(std::io::Error::last_os_error().into());
-        }
-        Ok(())
     }
 }
 

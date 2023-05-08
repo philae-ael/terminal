@@ -1,0 +1,16 @@
+[package]
+name = "terminal"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.70"
+mio = "0.8.6"
+signal-hook = "0.3.15"
+signal-hook-mio = { version = "0.2.3", features = ["support-v0_8"] }
+terminal-common = { version = "0.1.0", path = "../terminal-common" }
+terminal-echo = { version = "0.1.0", path = "../terminal-echo" }
+terminal-tty = { version = "0.1.0", path = "../terminal-tty" }
+thiserror = "1.0.40"
